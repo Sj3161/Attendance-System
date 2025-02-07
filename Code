@@ -1,0 +1,135 @@
+import csv
+import os
+
+def add_attendance():
+    name = input("Enter student name: ")
+    date = input("Enter date (YYYY-MM-DD): ")
+    status = input("Enter status (Present/Absent): ")
+    
+    with open("attendance.csv", "a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([name, date, status])
+    print("Attendance recorded successfully!")
+
+def view_attendance():
+    if not os.path.exists("attendance.csv"):
+        print("No attendance records found!")
+        return
+    
+    with open("attendance.csv", "r") as file:
+        reader = csv.reader(file)
+        print("\nAttendance Records:")
+        for row in reader:
+            print(row)
+
+def search_attendance():
+    name = input("Enter student name to search: ")
+    found = False
+    if not os.path.exists("attendance.csv"):
+        print("No attendance records found!")
+        return
+    
+    with open("attendance.csv", "r") as file:
+        reader = csv.reader(file)
+        print(f"\nAttendance Records for {name}:")
+        for row in reader:
+            if row[0].lower() == name.lower():
+                print(row)
+                found = True
+    if not found:
+        print("No records found for this student!")
+
+def export_attendance():
+    if not os.path.exists("attendance.csv"):
+        print("No attendance records found to export!")
+        return
+    
+    with open("attendance.csv", "r") as file:
+        data = file.read()
+    
+    with open("attendance_export.txt", "w") as export_file:
+        export_file.write(data)
+    
+    print("Attendance records exported successfully!")
+
+def delete_attendance():
+    name = input("Enter student name to delete records: ")
+    if not os.path.exists("attendance.csv"):
+        print("No attendance records found!")
+        return
+    
+    records = []
+    with open("attendance.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0].lower() != name.lower():
+                records.append(row)
+    
+    with open("attendance.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(records)
+    
+    print(f"Attendance records for {name} deleted successfully!")
+
+def update_attendance():
+    name = input("Enter student name to update records: ")
+    date = input("Enter date to update (YYYY-MM-DD): ")
+    new_status = input("Enter new status (Present/Absent): ")
+    
+    if not os.path.exists("attendance.csv"):
+        print("No attendance records found!")
+        return
+    
+    records = []
+    updated = False
+    with open("attendance.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0].lower() == name.lower() and row[1] == date:
+                records.append([name, date, new_status])
+                updated = True
+            else:
+                records.append(row)
+    
+    with open("attendance.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(records)
+    
+    if updated:
+        print("Attendance record updated successfully!")
+    else:
+        print("No matching record found to update!")
+
+def main():
+    while True:
+        print("\nAttendance System")
+        print("1. Add Attendance")
+        print("2. View Attendance")
+        print("3. Search Attendance by Name")
+        print("4. Export Attendance Records")
+        print("5. Delete Attendance Record")
+        print("6. Update Attendance Record")
+        print("7. Exit")
+        
+        choice = input("Enter your choice: ")
+        
+        if choice == "1":
+            add_attendance()
+        elif choice == "2":
+            view_attendance()
+        elif choice == "3":
+            search_attendance()
+        elif choice == "4":
+            export_attendance()
+        elif choice == "5":
+            delete_attendance()
+        elif choice == "6":
+            update_attendance()
+        elif choice == "7":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+if __name__ == "__main__":
+    main()
